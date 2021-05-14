@@ -1,0 +1,25 @@
+{
+  "fallbackUrl": "https://bruno.works",
+  "urls": [
+    {
+      "url": "/in",
+      "destination": "https://linkedin.com/in/brunogeronimo/en"
+    },
+    {
+      "url": "/music",
+      "destination": "https://open.spotify.com/playlist/3dXJNntIl92hawkeKxpPTQ"
+    },
+    {
+      "url": "/memes",
+      "destination": "https://t.me/bruni_memes"
+    },
+    {
+      "url": "/telegram",
+      "destination": "https://t.me/brunogeronimo"
+    },
+    {
+      "url": "/twitter",
+      "destination": "https://twitter.com/BrunoGeronimo"
+    }
+  ]
+}
