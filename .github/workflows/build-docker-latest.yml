@@ -2,7 +2,7 @@ name: Build and deploy Docker Image
 
 on:
   push:
-    branches: [ adds-docker-ci ]
+    branches: [ master ]
 
 jobs:
   docker:
@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKER_IMAGE }}:docker-test
+          tags: ${{ secrets.DOCKER_IMAGE }}:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
