@@ -1,0 +1,24 @@
+name: Build and deploy Docker Image
+
+on:
+  push:
+    branches: [ adds-docker-ci ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login on DockerHub
+      env:
+        USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      run: echo -n $TOKEN | docker login --username $USERNAME --password-stdin
+    - name: Builds image
+      env:
+        IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      run: docker build . --file Dockerfile --tag $IMAGE:test-dockerfile
+    - name: Deploys tag to DockerHub
+      env:
+        IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      run: docker push $IMAGE:test-dockerfile
