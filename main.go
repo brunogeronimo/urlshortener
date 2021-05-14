@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bruno.works/urlshortener/helpers"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 var configFilePath = "configs/urls.json"
@@ -46,15 +48,30 @@ func parseUrls() {
 	}
 }
 
-func main() {
-	configs, _ := ioutil.ReadFile(configFilePath)
-	err := json.Unmarshal(configs, &configurationFile)
+func parseConfigFile() {
+	projectPath, err := helpers.RunningDir()
 
 	if err != nil {
-		log.Fatal("Error while parsing config file", err)
-		os.Exit(1)
+		log.Fatal("Error while retrieving project path: ", err)
 	}
 
+	configurationFilePath := filepath.Join(projectPath, configFilePath)
+
+	configs, readErr := ioutil.ReadFile(configurationFilePath)
+
+	if readErr != nil {
+		log.Fatal("Error while parsing config file: ", err)
+	}
+
+	parseErr := json.Unmarshal(configs, &configurationFile)
+
+	if parseErr != nil {
+		log.Fatal("Error while parsing config file: ", err)
+	}
+}
+
+func main() {
+	parseConfigFile()
 	validateStructure()
 	parseUrls()
 
