@@ -2,7 +2,7 @@ name: Build and deploy latest docker image
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   docker:
