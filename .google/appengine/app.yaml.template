@@ -1,0 +1,3 @@
+runtime: go115
+env_variables:
+  CONFIG_URL: ${GCLOUD_CONFIG_URL}
