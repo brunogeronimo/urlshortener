@@ -1,16 +1,14 @@
 package main
 
 import (
-	"bruno.works/urlshortener/helpers"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
-var configFilePath = "configs/urls.json"
 var urls = make(map[string]string)
 var fallbackUrl = ""
 var configurationFile ConfigurationFile
@@ -28,7 +26,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func validateStructure() {
 	if configurationFile.FallbackUrl == "" {
 		log.Fatal("fallbackUrl is mandatory on configuration file")
-		os.Exit(1)
 	}
 }
 
@@ -48,26 +45,46 @@ func parseUrls() {
 	}
 }
 
-func parseConfigFile() {
-	projectPath, err := helpers.RunningDir()
+func downloadConfigFile() []byte {
+	configFile, err := http.Get(getConfigUrl())
 
 	if err != nil {
-		log.Fatal("Error while retrieving project path: ", err)
+		log.Fatal(fmt.Sprintf("Error while downloading config file: %s", err))
 	}
 
-	configurationFilePath := filepath.Join(projectPath, configFilePath)
+	defer configFile.Body.Close()
 
-	configs, readErr := ioutil.ReadFile(configurationFilePath)
+	body, _ := ioutil.ReadAll(configFile.Body)
 
-	if readErr != nil {
-		log.Fatal("Error while parsing config file: ", err)
-	}
+	return body
+}
 
-	parseErr := json.Unmarshal(configs, &configurationFile)
+func parseConfigFile() {
+	parseErr := json.Unmarshal(downloadConfigFile(), &configurationFile)
 
 	if parseErr != nil {
-		log.Fatal("Error while parsing config file: ", err)
+		log.Fatal("Error while parsing config file: ", parseErr)
 	}
+}
+
+func getConfigUrl() string {
+	url := os.Getenv("CONFIG_URL")
+
+	if url == "" {
+		log.Fatal("CONFIG_URL variable has not been provided")
+	}
+
+	return url
+}
+
+func getPort() string {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		return "8080"
+	}
+
+	return port
 }
 
 func main() {
@@ -79,5 +96,5 @@ func main() {
 
 	http.HandleFunc("/", handler)
 
-	log.Println(http.ListenAndServe("", nil))
+	log.Println(http.ListenAndServe(fmt.Sprintf(":%s", getPort()), nil))
 }
