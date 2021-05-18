@@ -1,0 +1,9 @@
+.git/
+.github/
+.google/
+
+.gitignore
+.gcloudignore
+
+config.json.example
+urlshortener
