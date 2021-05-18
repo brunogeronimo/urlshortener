@@ -1,0 +1,23 @@
+name: Deploy URL Shortener to Google App Engine
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  appengine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v2
+      - name: Builds app.yml file
+        env:
+          GCLOUD_CONFIG_URL: ${{ secrets.GCLOUD_CONFIG_URL }}
+        run: envsubst < .google/appengine/app.yaml.template > app.yaml
+      - name: Deploy an App Engine app
+        id: deploy-app
+        uses: google-github-actions/deploy-appengine@main
+        with:
+          project: ${{ secrets.GCLOUD_PROJECT }}
+          deliverables: app.yaml
+          credentials: ${{ secrets.GCLOUD_CREDENTIALS }}

@@ -1,0 +1,9 @@
+{
+  "fallbackUrl": "https://fallback.url",
+  "urls": [
+    {
+      "url": "/short-url",
+      "destination": "https://long-and-extense.url"
+    }
+  ]
+}
