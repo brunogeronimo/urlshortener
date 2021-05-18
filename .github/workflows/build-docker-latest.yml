@@ -1,13 +1,27 @@
-name: Build and deploy latest docker image
+name: Build and deploy docker images
 
 on:
   push:
     branches: [ main ]
+    tags: '*'
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      -
+        name: Gets docker image tag
+        id: get_version
+        run: | #!/bin/bash
+              TAG=${GITHUB_REF/refs\/tags\//}
+              TAG=${TAG/refs\/heads\//}
+
+              if [ "$TAG" = "main" ]
+              then
+                echo ::set-output name=DOCKER_IMAGE_TAG::latest
+              else
+                echo ::set-output name=DOCKER_IMAGE_TAG::"$TAG"
+              fi
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -26,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKER_IMAGE }}:latest
+          tags: ${{ secrets.DOCKER_IMAGE }}:${{ steps.get_version.outputs.DOCKER_IMAGE_TAG }}
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
