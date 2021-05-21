@@ -18,6 +18,6 @@ jobs:
         id: deploy-app
         uses: google-github-actions/deploy-appengine@main
         with:
-          project: ${{ secrets.GCLOUD_PROJECT }}
+          project_id: ${{ secrets.GCLOUD_PROJECT }}
           deliverables: app.yaml
           credentials: ${{ secrets.GCLOUD_CREDENTIALS }}
