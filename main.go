@@ -16,7 +16,7 @@ var configurationFile ConfigurationFile
 func handler(w http.ResponseWriter, r *http.Request) {
 	destinationUrl := urls[r.URL.Path]
 	if destinationUrl == "" {
-		http.Redirect(w, r, fallbackUrl, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, fallbackUrl, getFallbackRedirectCode())
 		return
 	}
 
@@ -85,6 +85,14 @@ func getPort() string {
 	}
 
 	return port
+}
+
+func getFallbackRedirectCode() int {
+	if configurationFile.IsFallbackPermanentRedirect {
+		return http.StatusPermanentRedirect
+	}
+
+	return http.StatusTemporaryRedirect
 }
 
 func main() {

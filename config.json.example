@@ -1,5 +1,6 @@
 {
   "fallbackUrl": "https://fallback.url",
+  "isFallbackPermanentRedirect": false,
   "urls": [
     {
       "url": "/short-url",
