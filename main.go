@@ -41,7 +41,7 @@ func main() {
 	downloadedConfigurationFile := downloadConfigurationFile()
 	var parseError error
 
-	urls, redirectCode, parseError = url_parser.ConfigurationToObjects(downloadedConfigurationFile)
+	urls, fallbackUrl, redirectCode, parseError = url_parser.ConfigurationToObjects(downloadedConfigurationFile)
 	if parseError != nil {
 		log.Fatal(parseError)
 	}

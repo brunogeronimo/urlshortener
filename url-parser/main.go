@@ -9,6 +9,10 @@ import (
 	"net/http"
 )
 
+func getFallbackUrl(configurationFile types.ConfigurationFile) string {
+	return configurationFile.FallbackUrl
+}
+
 func getFallbackRedirectCode(configurationFile types.ConfigurationFile) int {
 	if configurationFile.IsFallbackPermanentRedirect {
 		return http.StatusPermanentRedirect
@@ -55,21 +59,22 @@ func parseConfigFile(downloadedConfigurationFile []byte) (types.ConfigurationFil
 	return configurationFile, nil
 }
 
-func ConfigurationToObjects(downloadedConfigurationFile []byte) (types.Urls, int, error) {
+func ConfigurationToObjects(downloadedConfigurationFile []byte) (types.Urls, string, int, error) {
 	var urls = make(types.Urls)
 
 	configurationFile, parseError := parseConfigFile(downloadedConfigurationFile)
 	if parseError != nil {
-		return urls, -1, errors.New(fmt.Sprintf("Error while parsing config file: %s", parseError))
+		return urls, "", -1, errors.New(fmt.Sprintf("Error while parsing config file: %s", parseError))
 	}
 
 	validationError := validateStructure(configurationFile)
 	if validationError != nil {
-		return urls, -1, errors.New(fmt.Sprintf("Error while validating config file: %s", validationError))
+		return urls, "", -1, errors.New(fmt.Sprintf("Error while validating config file: %s", validationError))
 	}
 
 	urls = parseUrls(configurationFile)
+	fallbackUrl := getFallbackUrl(configurationFile)
 	redirectCode := getFallbackRedirectCode(configurationFile)
 
-	return urls, redirectCode, nil
+	return urls, fallbackUrl, redirectCode, nil
 }
