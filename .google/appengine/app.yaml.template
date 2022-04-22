@@ -1,4 +1,4 @@
-runtime: go118
+runtime: go116
 env_variables:
   CONFIG_URL: ${GCLOUD_CONFIG_URL}
 automatic_scaling:
