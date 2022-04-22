@@ -1,4 +1,4 @@
-package main
+package types
 
 type ShortUrl struct {
 	Url         string `json:"url"`
@@ -10,3 +10,5 @@ type ConfigurationFile struct {
 	IsFallbackPermanentRedirect bool       `json:"isFallbackPermanentRedirect"`
 	Urls                        []ShortUrl `json:"urls"`
 }
+
+type Urls map[string]string
