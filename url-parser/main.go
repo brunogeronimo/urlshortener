@@ -59,7 +59,7 @@ func parseConfigFile(downloadedConfigurationFile []byte) (types.ConfigurationFil
 	return configurationFile, nil
 }
 
-func ConfigurationToObjects(downloadedConfigurationFile []byte) (types.Configuration, error) {
+func ParseToConfig(downloadedConfigurationFile []byte) (types.Configuration, error) {
 	configurationFile, parseError := parseConfigFile(downloadedConfigurationFile)
 	if parseError != nil {
 		return types.Configuration{}, errors.New(fmt.Sprintf("Error while parsing config file: %s", parseError))

@@ -38,7 +38,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	downloadedConfigurationFile := downloadConfigurationFile()
 
-	configuration, parseError := url_parser.ConfigurationToObjects(downloadedConfigurationFile)
+	configuration, parseError := url_parser.ParseToConfig(downloadedConfigurationFile)
 	if parseError != nil {
 		log.Fatal(parseError)
 	}
