@@ -9,9 +9,7 @@ import (
 	"net/http"
 )
 
-var fallbackUrl = ""
-var redirectCode int
-var urls types.Urls
+var globalConfiguration types.Configuration
 
 func downloadConfigurationFile() []byte {
 	configFile, err := http.Get(getConfigurationUrl())
@@ -28,9 +26,9 @@ func downloadConfigurationFile() []byte {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	destinationUrl := urls[r.URL.Path]
+	destinationUrl := globalConfiguration.Urls[r.URL.Path]
 	if destinationUrl == "" {
-		http.Redirect(w, r, fallbackUrl, redirectCode)
+		http.Redirect(w, r, globalConfiguration.Fallback.Url, globalConfiguration.Fallback.RedirectCode)
 		return
 	}
 
@@ -39,12 +37,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	downloadedConfigurationFile := downloadConfigurationFile()
-	var parseError error
 
-	urls, fallbackUrl, redirectCode, parseError = url_parser.ConfigurationToObjects(downloadedConfigurationFile)
+	configuration, parseError := url_parser.ConfigurationToObjects(downloadedConfigurationFile)
 	if parseError != nil {
 		log.Fatal(parseError)
 	}
+
+	globalConfiguration = configuration
 
 	http.HandleFunc("/", handler)
 

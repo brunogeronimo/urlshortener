@@ -59,22 +59,22 @@ func parseConfigFile(downloadedConfigurationFile []byte) (types.ConfigurationFil
 	return configurationFile, nil
 }
 
-func ConfigurationToObjects(downloadedConfigurationFile []byte) (types.Urls, string, int, error) {
-	var urls = make(types.Urls)
-
+func ConfigurationToObjects(downloadedConfigurationFile []byte) (types.Configuration, error) {
 	configurationFile, parseError := parseConfigFile(downloadedConfigurationFile)
 	if parseError != nil {
-		return urls, "", -1, errors.New(fmt.Sprintf("Error while parsing config file: %s", parseError))
+		return types.Configuration{}, errors.New(fmt.Sprintf("Error while parsing config file: %s", parseError))
 	}
 
 	validationError := validateStructure(configurationFile)
 	if validationError != nil {
-		return urls, "", -1, errors.New(fmt.Sprintf("Error while validating config file: %s", validationError))
+		return types.Configuration{}, errors.New(fmt.Sprintf("Error while validating config file: %s", validationError))
 	}
 
-	urls = parseUrls(configurationFile)
-	fallbackUrl := getFallbackUrl(configurationFile)
-	redirectCode := getFallbackRedirectCode(configurationFile)
-
-	return urls, fallbackUrl, redirectCode, nil
+	return types.Configuration{
+		Urls: parseUrls(configurationFile),
+		Fallback: types.Fallback {
+			Url: getFallbackUrl(configurationFile),
+			RedirectCode: getFallbackRedirectCode(configurationFile),
+		},
+	}, nil
 }
