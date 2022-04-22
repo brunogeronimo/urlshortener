@@ -1,52 +1,18 @@
 package main
 
 import (
-	"encoding/json"
+	"bruno.works/urlshortener/types"
+	"bruno.works/urlshortener/url-parser"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
-var urls = make(map[string]string)
-var fallbackUrl = ""
-var configurationFile ConfigurationFile
+var globalConfiguration types.Configuration
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	destinationUrl := urls[r.URL.Path]
-	if destinationUrl == "" {
-		http.Redirect(w, r, fallbackUrl, getFallbackRedirectCode())
-		return
-	}
-
-	http.Redirect(w, r, destinationUrl, http.StatusPermanentRedirect)
-}
-
-func validateStructure() {
-	if configurationFile.FallbackUrl == "" {
-		log.Fatal("fallbackUrl is mandatory on configuration file")
-	}
-}
-
-func parseUrls() {
-	for i, url := range configurationFile.Urls {
-		if url.Url == "" {
-			log.Println(`Url attribute is not set on url. Skipping...`, i)
-			continue
-		}
-
-		if url.Destination == "" {
-			log.Println(`Destination attribute is not set on url. Skipping`, i)
-			continue
-		}
-
-		urls[url.Url] = url.Destination
-	}
-}
-
-func downloadConfigFile() []byte {
-	configFile, err := http.Get(getConfigUrl())
+func downloadConfigurationFile() []byte {
+	configFile, err := http.Get(getConfigurationUrl())
 
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Error while downloading config file: %s", err))
@@ -59,48 +25,25 @@ func downloadConfigFile() []byte {
 	return body
 }
 
-func parseConfigFile() {
-	parseErr := json.Unmarshal(downloadConfigFile(), &configurationFile)
-
-	if parseErr != nil {
-		log.Fatal("Error while parsing config file: ", parseErr)
-	}
-}
-
-func getConfigUrl() string {
-	url := os.Getenv("CONFIG_URL")
-
-	if url == "" {
-		log.Fatal("CONFIG_URL variable has not been provided")
+func handler(w http.ResponseWriter, r *http.Request) {
+	destinationUrl := globalConfiguration.Urls[r.URL.Path]
+	if destinationUrl == "" {
+		http.Redirect(w, r, globalConfiguration.Fallback.Url, globalConfiguration.Fallback.RedirectCode)
+		return
 	}
 
-	return url
-}
-
-func getPort() string {
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		return "8080"
-	}
-
-	return port
-}
-
-func getFallbackRedirectCode() int {
-	if configurationFile.IsFallbackPermanentRedirect {
-		return http.StatusPermanentRedirect
-	}
-
-	return http.StatusTemporaryRedirect
+	http.Redirect(w, r, destinationUrl, http.StatusPermanentRedirect)
 }
 
 func main() {
-	parseConfigFile()
-	validateStructure()
-	parseUrls()
+	downloadedConfigurationFile := downloadConfigurationFile()
 
-	fallbackUrl = configurationFile.FallbackUrl
+	configuration, parseError := url_parser.ParseToConfig(downloadedConfigurationFile)
+	if parseError != nil {
+		log.Fatal(parseError)
+	}
+
+	globalConfiguration = configuration
 
 	http.HandleFunc("/", handler)
 
