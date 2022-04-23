@@ -38,6 +38,27 @@ func TestParseToConfigWithoutFallbackUrl(t *testing.T) {
 	}
 }
 
+func TestParseToConfigWithInvalidUrls(t *testing.T) {
+	configuration, parseError := ParseToConfig([]byte(`{"fallbackUrl": "https://fallback.url","urls": [{"url": "","destination": ""},{"url": "awesome-url","destination": ""},{"url": "","destination": "awesome-destination"},{"url": "/awesome-url","destination": "https://awesome.destination"}]}`))
+
+	if parseError != nil {
+		t.Fatalf("No errors were expected, found %s", parseError)
+	}
+
+	urlListSize := len(configuration.Urls)
+	if urlListSize != 1 {
+		t.Fatalf("Only one URL was expected, found %b", urlListSize)
+	}
+
+	originUrl := "/awesome-url"
+	expectedDestinationUrl := "https://awesome.destination"
+	destinationUrl := configuration.Urls[originUrl]
+
+	if destinationUrl != expectedDestinationUrl {
+		t.Fatalf("Found destination URL does not match with expected. Expected %s, found %s", expectedDestinationUrl, destinationUrl)
+	}
+}
+
 func TestParseToConfigNotFallbackPermanentRedirect(t *testing.T) {
 	testData := `{"fallbackUrl": "https://fallback.url", "isFallbackPermanentRedirect": false}`
 	configuration, parseError := ParseToConfig([]byte(testData))
