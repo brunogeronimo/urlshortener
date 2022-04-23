@@ -14,8 +14,8 @@ The following env variables have to be defined:
 
 | Name         | Description                                     | Required | Default Value |
 |--------------|-------------------------------------------------|----------|---------------|
-| `CONFIG_URL` | Contains the config JSON file with all settings | [x]      |               |
-| `PORT`       | Port to run the application                     | []       | `8080`        | 
+| `CONFIG_URL` | Contains the config JSON file with all settings | yes      |               |
+| `PORT`       | Port to run the application                     | no       | `8080`        | 
 
 # Ways to run the project
 
