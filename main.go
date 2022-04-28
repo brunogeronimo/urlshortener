@@ -2,17 +2,24 @@ package main
 
 import (
 	"bruno.works/urlshortener/types"
-	"bruno.works/urlshortener/url-parser"
+	"bruno.works/urlshortener/urlparser"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-var globalConfiguration types.Configuration
+var (
+	globalConfiguration types.Configuration
+	Client              types.HTTPClient
+)
+
+func init() {
+	Client = &http.Client{}
+}
 
 func downloadConfigurationFile() []byte {
-	configFile, err := http.Get(getConfigurationUrl())
+	configFile, err := Client.Get(getConfigurationUrl())
 
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Error while downloading config file: %s", err))
@@ -35,15 +42,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, destinationUrl, http.StatusPermanentRedirect)
 }
 
-func main() {
+func prepareEnv() {
 	downloadedConfigurationFile := downloadConfigurationFile()
 
-	configuration, parseError := url_parser.ParseToConfig(downloadedConfigurationFile)
+	configuration, parseError := urlparser.ParseToConfig(downloadedConfigurationFile)
 	if parseError != nil {
 		log.Fatal(parseError)
 	}
 
 	globalConfiguration = configuration
+}
+
+func main() {
+	prepareEnv()
 
 	http.HandleFunc("/", handler)
 
