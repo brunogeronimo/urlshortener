@@ -20,12 +20,11 @@ type ConfigurationFile struct {
 type Urls map[string]string
 
 type Fallback struct {
-	Url string
+	Url          string
 	RedirectCode int
 }
 
-
 type Configuration struct {
-	Urls Urls
+	Urls     Urls
 	Fallback Fallback
 }
