@@ -1,4 +1,4 @@
-package url_parser
+package urlparser
 
 import (
 	"bruno.works/urlshortener/types"
