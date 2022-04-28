@@ -1,5 +1,11 @@
 package types
 
+import "net/http"
+
+type HTTPClient interface {
+	Get(url string) (resp *http.Response, err error)
+}
+
 type ShortUrl struct {
 	Url         string `json:"url"`
 	Destination string `json:"destination"`
