@@ -1,4 +1,4 @@
-package url_parser
+package urlparser
 
 import (
 	"testing"
@@ -39,7 +39,27 @@ func TestParseToConfigWithoutFallbackUrl(t *testing.T) {
 }
 
 func TestParseToConfigWithInvalidUrls(t *testing.T) {
-	configuration, parseError := ParseToConfig([]byte(`{"fallbackUrl": "https://fallback.url","urls": [{"url": "","destination": ""},{"url": "awesome-url","destination": ""},{"url": "","destination": "awesome-destination"},{"url": "/awesome-url","destination": "https://awesome.destination"}]}`))
+	configuration, parseError := ParseToConfig([]byte(`{
+		"fallbackUrl": "https://fallback.url",
+		"urls": [
+			{
+				"url": "",
+				"destination": ""
+			},
+			{
+				"url": "awesome-url",
+				"destination": ""
+			},
+			{
+				"url": "",
+				"destination": "awesome-destination"
+			},
+			{
+				"url": "/awesome-url",
+				"destination": "https://awesome.destination"
+			}
+		]
+	}`))
 
 	if parseError != nil {
 		t.Fatalf("No errors were expected, found %s", parseError)
@@ -73,7 +93,17 @@ func TestParseToConfigNotFallbackPermanentRedirect(t *testing.T) {
 }
 
 func TestParseToConfig(t *testing.T) {
-	testData := `{"urls": [{"url": "/short-url","destination": "https://long-and-extense.url"}], "fallbackUrl": "https://fallback.url", "isFallbackPermanentRedirect": true}`
+	testData := `{
+		"fallbackUrl": "https://fallback.url",
+		"urls": [
+			{
+				"url": "/short-url",
+				"destination": "https://long-and-extense.url"
+			}
+		],
+		"isFallbackPermanentRedirect": true
+	}`
+
 	configuration, parseError := ParseToConfig([]byte(testData))
 	listSize := len(configuration.Urls)
 

@@ -1,4 +1,4 @@
-package url_parser
+package urlparser
 
 import (
 	"bruno.works/urlshortener/types"
@@ -72,8 +72,8 @@ func ParseToConfig(downloadedConfigurationFile []byte) (types.Configuration, err
 
 	return types.Configuration{
 		Urls: parseUrls(configurationFile),
-		Fallback: types.Fallback {
-			Url: getFallbackUrl(configurationFile),
+		Fallback: types.Fallback{
+			Url:          getFallbackUrl(configurationFile),
 			RedirectCode: getFallbackRedirectCode(configurationFile),
 		},
 	}, nil

@@ -1,5 +1,11 @@
 package types
 
+import "net/http"
+
+type HTTPClient interface {
+	Get(url string) (resp *http.Response, err error)
+}
+
 type ShortUrl struct {
 	Url         string `json:"url"`
 	Destination string `json:"destination"`
@@ -14,12 +20,11 @@ type ConfigurationFile struct {
 type Urls map[string]string
 
 type Fallback struct {
-	Url string
+	Url          string
 	RedirectCode int
 }
 
-
 type Configuration struct {
-	Urls Urls
+	Urls     Urls
 	Fallback Fallback
 }
