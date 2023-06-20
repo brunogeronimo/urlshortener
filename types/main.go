@@ -11,10 +11,15 @@ type ShortUrl struct {
 	Destination string `json:"destination"`
 }
 
+type Signature struct {
+	Sha256 string `json:"sha256"`
+}
+
 type ConfigurationFile struct {
 	FallbackUrl                 string     `json:"fallbackUrl"`
 	IsFallbackPermanentRedirect bool       `json:"isFallbackPermanentRedirect"`
 	Urls                        []ShortUrl `json:"urls"`
+	Signature                   Signature  `json:"signature"`
 }
 
 type Urls map[string]string

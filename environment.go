@@ -7,6 +7,8 @@ import (
 
 const ConfigUrl = "CONFIG_URL"
 const Port = "PORT"
+const CheckSignature = "CHECK_SIGNATURE"
+const PublicKey = "PUBLIC_KEY"
 
 func getConfigurationUrl() string {
 	url := os.Getenv(ConfigUrl)
@@ -26,4 +28,14 @@ func getPort() string {
 	}
 
 	return port
+}
+
+func getPublicKey() string {
+	return os.Getenv(PublicKey)
+}
+
+func isCheckSignatureEnabled() bool {
+	getSignature := os.Getenv(CheckSignature)
+
+	return getSignature == "true"
 }
