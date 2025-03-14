@@ -1,3 +1,3 @@
 module bruno.works/urlshortener
 
-go 1.15
+go 1.23
