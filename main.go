@@ -1,12 +1,14 @@
 package main
 
 import (
-	"bruno.works/urlshortener/types"
-	"bruno.works/urlshortener/urlparser"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"bruno.works/urlshortener/signaturevalidator"
+	"bruno.works/urlshortener/types"
+	"bruno.works/urlshortener/urlparser"
 )
 
 var (
@@ -22,7 +24,7 @@ func downloadConfigurationFile() []byte {
 	configFile, err := Client.Get(getConfigurationUrl())
 
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Error while downloading config file: %s", err))
+		log.Fatalf("Error while downloading config file: %s", err)
 	}
 
 	defer configFile.Body.Close()
@@ -30,6 +32,14 @@ func downloadConfigurationFile() []byte {
 	body, _ := ioutil.ReadAll(configFile.Body)
 
 	return body
+}
+
+func validateConfigSignature(downloadedConfigurationFile []byte) {
+	publicKey := getPublicKey()
+	if publicKey == "" {
+		log.Fatalf("Security error! %s is set to true, but no public key has been defined", PublicKey)
+	}
+	signaturevalidator.IsSignatureValid(publicKey, downloadedConfigurationFile)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +54,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func prepareEnv() {
 	downloadedConfigurationFile := downloadConfigurationFile()
+
+	if isCheckSignatureEnabled() {
+		validateConfigSignature(downloadedConfigurationFile)
+	}
 
 	configuration, parseError := urlparser.ParseToConfig(downloadedConfigurationFile)
 	if parseError != nil {
