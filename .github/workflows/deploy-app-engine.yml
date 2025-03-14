@@ -14,10 +14,13 @@ jobs:
         env:
           GCLOUD_CONFIG_URL: ${{ secrets.GCLOUD_CONFIG_URL }}
         run: envsubst < .google/appengine/app.yaml.template > app.yaml
+      - name: Authenticates to Google Cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ secrets.GCLOUD_CREDENTIALS }}
       - name: Deploy an App Engine app
         id: deploy-app
         uses: google-github-actions/deploy-appengine@main
         with:
           project_id: ${{ secrets.GCLOUD_PROJECT }}
           deliverables: app.yaml
-          credentials: ${{ secrets.GCLOUD_CREDENTIALS }}
